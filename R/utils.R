@@ -74,18 +74,22 @@ constructWhereStatement <- function(..., start = Sys.Date() - 30, end = NULL,
   paste(names(pars), pars, sep = ' ', collapse = " AND ")
 }
 
-# Fix times: times in NEPTUNE are UTC-08:00.  Create UTC and local times from these.
+# Fix times: times in NEPTUNE are UTC-08:00.  Create local times from these.
 #'@import stringi
 parseUTCm8Time <- function(x, tz = "America/Los_angeles"){
   x <- stri_join(x, " -08:00")
   lubridate::ymd_hms(x, quiet = TRUE, tz = tz)
 }
 
+parseLocalTime <- function(x){
+  ymd_hms(x, quiet = TRUE, tz = 'America/Los_angeles')
+}
+
 #'@import stringi
 #'@import checkmate
 formatDataFrame <- function(x, drop = NULL, sort = NULL,
                             date = NULL, numeric = NULL, bool = NULL, true.value = NULL,
-                            parseDate = lubridate::ymd_hms){
+                            parseDate = parseLocalTime){
   checkmate::assertClass(x, 'data.frame')
   nms <- names(x)
   checkmate::assertSubset(c(drop, sort, date, bool), choices = nms)

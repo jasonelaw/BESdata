@@ -38,7 +38,7 @@ read.janus <- function (..., start = NULL, end = NULL, dsn = 'JANUS_REP_64',  da
 
   kSort  <- c('location_code', 'method_code', 'janus_analyte_name', 'sample_end_time')
   kDates <- c('sample_begin_time', 'sample_end_time', 'update_date')
-  ret <- formatDataFrame(ret, sort = kSort, date = kDates, parseDate = lubridate::ymd_hms)
+  ret <- formatDataFrame(ret, sort = kSort, date = kDates, parseDate = parseLocalTime)
   ret$combined_result <- ifelse(is.na(ret$combined_result), ret$numeric_result, ret$combined_result)
   ret$text_result     <- ret$combined_result
   ret$nd <- stringi::stri_extract_first_regex(ret$combined_result, '^[<>]')
