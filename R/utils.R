@@ -82,7 +82,7 @@ parseUTCm8Time <- function(x, tz = "America/Los_angeles"){
 }
 
 parseLocalTime <- function(x){
-  ymd_hms(x, quiet = TRUE, tz = 'America/Los_angeles')
+  lubridate::ymd_hms(x, quiet = TRUE, tz = 'America/Los_angeles')
 }
 
 #'@import stringi
