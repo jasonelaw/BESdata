@@ -39,8 +39,10 @@ To query by Hansen ID use the field name mv.manhole_hansen_id. To query a specif
 date range use start and end arguments, otherwise all available data at that location
 will be returned.
 
-The user running R must have permission to access the database view and must have
-an ODBC Data Source set up for the Janus database on the current computer.
+The user running R must have permission to access the view (V_METER_VISIT_LIST_NARROW) and
+and table (METER_READING) used in the query. The user must have
+an ODBC Data Source set up for the Janus database on the current computer. The reporting
+server version of the database is currently BESREPORTS.JANUS.
 }
 \author{
 Peter Bryant peter.bryant@portlandoregon.gov
