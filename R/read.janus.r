@@ -15,6 +15,7 @@
 #'
 #'The user running R must have permission to access the database view and
 #'must have a ODBC Data Source set up for the view on the current computer.
+#'The reporting server version of the table is currently BESREPORTS.WATERSHED.JANUS_ELEMENT.
 #'In addition, different ODBC connections must be set up for 32 and 64 bit
 #'versions of R. The \code{RODBC::odbcDataSources()} function can be used to
 #'check the currently available data sources from within R.

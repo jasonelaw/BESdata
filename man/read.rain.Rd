@@ -29,6 +29,7 @@ The stored procedure summarizes the data within a prespecified period of time
 (e.g., hourly) and returns the summarized data rather than raw tips.
 }
 \details{
-A DSN for the Hydra database must be set up on your machine.  The name of
+A DSN for the Hydra database must be set up on your machine. The current location of
+the stored procedure is BESDBPROD2.NEPTUNE.USP_MODEL_RAIN.  The name of
 that DSN is then passed to the function via the \code{DSN} argument.
 }
