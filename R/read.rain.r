@@ -13,11 +13,14 @@
 #'@param end the end date as a \code{Date} object
 #'@param daypart the unit in which the interval is specified
 #'@param interval the interval over which the data should be summarized
+#'@param dsn Alternate dsn for the NEPTUNE database - for access to production or test instances.
+#'@param format logical, TRUE will perform some data formatting, FALSE will return the data.frame exactly
+#'as it was returned by the database
 #'@return a data.frame of rain data
 #'@export
 read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
                       daypart = c('day','hour', 'minute', 'month', 'year'),
-                      interval = 1, dsn = 'NEPTUNE_64', format = T){
+                      interval = 1, dsn = null, format = T){
 
   make.queries <- function(start, end, interval, daypart, station){
     qry <- sprintf("{call USP_MODEL_RAIN('%s', '%s', %s, '%s', %s)}",
@@ -25,7 +28,7 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
     ans <- dbGetQuery(con, qry)
     return(if (is.data.frame(ans)) ans else NULL)
   }
-  con <- dbConnect(dsn)
+  con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   # Format args and get data
   daypart <- match.arg(daypart)

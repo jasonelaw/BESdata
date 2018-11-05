@@ -4,7 +4,7 @@
 \alias{read.flow}
 \title{Retrieve flow data from Janus}
 \usage{
-read.flow(..., start = NULL, end = NULL, dsn = "JANUS_REP_64",
+read.flow(..., start = NULL, end = NULL, dsn = NULL,
   date.field = "reading_datetime")
 }
 \arguments{
@@ -14,7 +14,7 @@ read.flow(..., start = NULL, end = NULL, dsn = "JANUS_REP_64",
 
 \item{end}{end date of data range}
 
-\item{dsn}{the dsn for the JANUS database}
+\item{dsn}{Alternate dsn for the JANUS database - for access to production or test instances.}
 
 \item{date.field}{the field used for the start and end query arguments. The default value is "reading_datetime"}
 }

@@ -1,5 +1,14 @@
-dbConnect <- function(dsn){
-  RODBC::odbcConnect(dsn)
+dbConnect <- function(database = c('DSN', 'JANUS', 'NEPTUNE', 'WATERSHED'), dsn = NULL){
+  database = match.arg(database)
+  if(identical(database, 'DSN') & is.null(dsn)){
+    stop('Must provide a dsn if no database name provided.')
+  }
+  conn.string <- switch(database,
+                        DSN       = sprintf('{DSN=%s}', dsn),
+                        JANUS     = 'driver={SQL Server};server=BESREPORTS;database=JANUS;trusted_connection=true',
+                        NEPTUNE   = 'driver={SQL Server};server=BESDBPROD1;database=NEPTUNE;trusted_connection=true',
+                        WATERSHED = 'driver={SQL Server};server=BESREPORTS;database=WATERSHED;trusted_connection=true')
+  RODBC:::odbcDriverConnect(conn.string)
 }
 
 dbDisconnect <- function(conn){

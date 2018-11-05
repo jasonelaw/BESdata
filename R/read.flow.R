@@ -15,7 +15,7 @@
 #'@param ... query arguments in the form 'field = value'
 #'@param start start date of data range
 #'@param end end date of data range
-#'@param dsn the dsn for the JANUS database
+#'@param dsn Alternate dsn for the JANUS database - for access to production or test instances.
 #'@param date.field the field used for the start and end query arguments. The default value is "reading_datetime"
 #'@return a data frame of results with the fields: \cr
 #'project_name\cr
@@ -30,10 +30,10 @@
 #'flow_cfs_AxV \cr
 #'@export
 #'@author Peter Bryant peter.bryant@portlandoregon.gov
-read.flow <- function (..., start = NULL, end = NULL, dsn = "JANUS_REP_64",
+read.flow <- function (..., start = NULL, end = NULL, dsn = NULL,
                        date.field = "reading_datetime")
 {
-  con <- dbConnect(dsn)
+  con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   where <- constructWhereStatement(..., start = start, end = end,
                                    date.field = date.field)
