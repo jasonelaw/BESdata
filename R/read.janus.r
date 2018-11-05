@@ -28,8 +28,8 @@
 #'@return a dataframe of results
 #'@export
 #'@author Jason Law jlaw@@portlandoregon.gov
-read.janus <- function (..., start = NULL, end = NULL, dsn = 'JANUS_REP_64',  date.field = 'sample_end_time'){
-  con <- dbConnect(dsn)
+read.janus <- function (..., start = NULL, end = NULL, dsn = NULL,  date.field = 'sample_end_time'){
+  con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   table  <- 'JANUS_ELEMENT'#"V_RPT_JANUS_ELEMENT"
   where <- constructWhereStatement(..., start = start, end = end,

@@ -4,7 +4,7 @@
 \alias{read.janus}
 \title{Submits a query to JANUS database}
 \usage{
-read.janus(..., start = NULL, end = NULL, dsn = "JANUS_REP_64",
+read.janus(..., start = NULL, end = NULL, dsn = NULL,
   date.field = "sample_end_time")
 }
 \arguments{

@@ -13,11 +13,16 @@
 #'@param end the end date as a \code{Date} object
 #'@param daypart the unit in which the interval is specified
 #'@param interval the interval over which the data should be summarized
+#'@param dsn Alternate dsn for the NEPTUNE database - for access to production or test instances.
+#'@param format logical, TRUE will perform some data formatting, FALSE will return the data.frame exactly
+#'as it was returned by the database
 #'@return a data.frame of rain data
 #'@export
 read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
                       daypart = c('day','hour', 'minute', 'month', 'year'),
-                      interval = 1, dsn = 'NEPTUNE_64', format = T){
+                      interval = 1, dsn = NULL, format = T){
+  con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  on.exit(dbDisconnect(con))
 
   make.queries <- function(start, end, interval, daypart, station){
     qry <- sprintf("{call USP_MODEL_RAIN('%s', '%s', %s, '%s', %s)}",
@@ -25,8 +30,7 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
     ans <- dbGetQuery(con, qry)
     return(if (is.data.frame(ans)) ans else NULL)
   }
-  con <- dbConnect(dsn)
-  on.exit(dbDisconnect(con))
+
   # Format args and get data
   daypart <- match.arg(daypart)
   args <- data.frame(station, start, end, daypart, interval)
@@ -68,9 +72,9 @@ formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
   return(x)
 }
 
-stations <- function(dsn = 'NEPTUNE_64', local.tz = 'America/Los_angeles')
+stations <- function(dsn = NULL, local.tz = 'America/Los_angeles')
 {
-  con <- dbConnect(dsn)
+  con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   qry <- c("
            SELECT DISTINCT STATION.h2_number as station,

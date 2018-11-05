@@ -4,8 +4,7 @@
 \alias{read.fish}
 \title{Query and Read PAWMAP Fish Data}
 \usage{
-read.fish(..., start = end - 7, end = Sys.Date(),
-  dsn = "WATERSHED_REP_64")
+read.fish(..., start = end - 7, end = Sys.Date(), dsn = NULL)
 }
 \arguments{
 \item{...}{query parameters in \code{tag = value} form}
@@ -14,7 +13,7 @@ read.fish(..., start = end - 7, end = Sys.Date(),
 
 \item{end}{an object of class Date; the latest survey start date to retrieve}
 
-\item{dsn}{The data source name for the ODBC connection on the current computer.}
+\item{dsn}{Alternate dsn for the WATERSHED database - for access to production or test instances.}
 }
 \description{
 Query PAWMAP electrofishing data and read the data into R.

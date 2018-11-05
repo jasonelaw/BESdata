@@ -22,16 +22,16 @@
 #'@param ... query parameters in \code{tag = value} form
 #'@param start an object of class Date; the earliest survey start date to retrieve
 #'@param end an object of class Date; the latest survey start date to retrieve
-#'@param dsn The data source name for the ODBC connection on the current computer.
+#'@param dsn Alternate dsn for the WATERSHED database - for access to production or test instances.
 #'@examples
 #'d <- read.fish(start = as.Date('2017-01-01'), end = as.Date('2017-03-01'))
 #'@export
-read.fish <- function(..., start = end - 7, end = Sys.Date(), dsn = "WATERSHED_REP_64"){
+read.fish <- function(..., start = end - 7, end = Sys.Date(), dsn = NULL){
   on.exit(dbDisconnect(con))
   where <- constructWhereStatement(..., start = start, end = end,
                                    date.field = 'collection_start_date')
   kFishView     <- "V_RPT_WATERSHED"
-  con   <- dbConnect(dsn)
+  con <- if(is.null(dsn)){ dbConnect(database = 'WATERSHED') } else { dbConnect(database = 'DSN', dsn = dsn) }
   query <- constructQuery(kFishView, where, unrestricted = TRUE)
   ret   <- dbGetQuery(con, query)
   return(ret)
