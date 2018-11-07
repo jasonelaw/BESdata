@@ -1,7 +1,7 @@
 Package: BESdata
 Type: Package
 Title: Retrieve BES data from internal databases.
-Version: 0.2.4
+Version: 0.2.5
 Author: Jason Law
 Maintainer: Jason Law <jason.law@portlandoregon.gov>
 Description: Retrieves data from City of Portland Bureau of Environmental
