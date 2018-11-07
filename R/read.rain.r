@@ -31,6 +31,7 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
     return(if (is.data.frame(ans)) ans else NULL)
   }
 
+
   # Format args and get data
   daypart <- match.arg(daypart)
   args <- data.frame(station, start, end, daypart, interval)
