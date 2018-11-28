@@ -60,7 +60,7 @@ formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
   x$sensor.present         <- x$sensor.present == 'Y'
   #   Fix dates
   x$start.local   <- parseUTCm8Time(x$date.time)
-  x$end.local     <- x$start.local + lubridate::period(interval, daypart)
+  x$end.local     <- x$start.local + lubridate::duration(interval, daypart)
   x$date.time   <- NULL
   #   Sort
   kFields <- c("station.name", "h2.number", "station.start", "station.end",
