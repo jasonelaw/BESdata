@@ -5,11 +5,7 @@
 #'The function accepts a \code{start} and \code{end} date along
 #'with query arguments in the form of \code{tag = value} statements
 #'which correspond to valid fields in the database view (WATERSHED.V_RPT_WATERSHED)
-#'used to access the data. The valid fields are: site_identifier, collection_start_date,
-#'collection_end_date, fished, fished_none_collected, reviewed_by, reviewed_by_date,
-#'fish_survey_update_by, fish_survey_update_date, field_shorthand_name,
-#'common_name, taxon_name, fish_length_mm, clipped, mortality, anomaly,
-#'fish_measure_update_by, and fish_measure_update_date. The start and end
+#'used to access the data. The start and end
 #'parameters are queried against the collection_start_date field.
 #'
 #'The user running R must have permission to access the database view and
@@ -24,7 +20,14 @@
 #'@param end an object of class Date; the latest survey start date to retrieve
 #'@param dsn Alternate dsn for the WATERSHED database - for access to production or test instances.
 #'@examples
+#'\dontrun{
+#'#List the available fields
+#'library(RODBC)
+#'con <- BESdata:::dbConnect("WATERSHED")
+#'sqlColumns(con, "V_RPT_WATERSHED")
+#'#Get some data
 #'d <- read.fish(start = as.Date('2017-01-01'), end = as.Date('2017-03-01'))
+#'}
 #'@export
 read.fish <- function(..., start = end - 7, end = Sys.Date(), dsn = NULL){
   on.exit(dbDisconnect(con))

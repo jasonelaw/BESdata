@@ -23,25 +23,25 @@ a dataframe of results
 }
 \description{
 Submits a query to JANUS database view JANUS_ELEMENT using
-arbitrary tag=value query parameters
+arbitrary tag=value query parameters.
 }
 \details{
-The fields available to query from are:sample_code, janus_project_name,
-location_id, location_code, sample_point, location_description,
-element_sample_name, sample_begin_time, sample_end_time, sample_type,
-matrix, method_code, element_analysis_name, analyte_id, element_analyte_name,
-anus_analyte_name, result_spec, result_op, numeric_result, analyte_units,
-combined_result, text_result_mdl, text_result_mrl, lab, project_id, depth,
-depth_units, hansen_id, export_to_wqdb, comments, qualifiers,
-analyte_result_id, janus_sample_id, collected_by, department, general_method,
-Client, update_date, and Wrk.
-
 The user running R must have permission to access the database view and
 must have a ODBC Data Source set up for the view on the current computer.
 The reporting server version of the table is currently BESREPORTS.WATERSHED.JANUS_ELEMENT.
 In addition, different ODBC connections must be set up for 32 and 64 bit
 versions of R. The \code{RODBC::odbcDataSources()} function can be used to
 check the currently available data sources from within R.
+}
+\examples{
+\dontrun{
+#List the available fields
+library(RODBC)
+con <- BESdata:::dbConnect("JANUS")
+sqlColumns(con, 'JANUS_ELEMENT')
+#Get the last 2 weeks of data
+read.janus(start = Sys.Date() - 14)
+}
 }
 \author{
 Jason Law jlaw@portlandoregon.gov

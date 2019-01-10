@@ -6,7 +6,7 @@
 \usage{
 read.rain(station = 160, start = end - 7, end = Sys.Date(),
   daypart = c("day", "hour", "minute", "month", "year"), interval = 1,
-  dsn = null, format = T)
+  dsn = NULL, format = T)
 }
 \arguments{
 \item{station}{a vector of hydra station codes; the default is the WPCL gauge}
