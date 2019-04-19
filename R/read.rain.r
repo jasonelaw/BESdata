@@ -23,7 +23,7 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
                       interval = 1, dsn = NULL, format = T){
   con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
-
+  stopifnot(is.Date(start), is.Date(end))
   make.queries <- function(start, end, interval, daypart, station){
     qry <- sprintf("{call USP_MODEL_RAIN('%s', '%s', %s, '%s', %s)}",
                    format(start), format(end), interval, daypart, station)
