@@ -4,10 +4,6 @@
 #'rain data from the SQL server database using the USP_MODEL_RAIN stored procedure.
 #'The stored procedure summarizes the data within a prespecified period of time
 #'(e.g., hourly) and returns the summarized data rather than raw tips.
-#'
-#'A DSN for the Hydra database must be set up on your machine. The current location of
-#'the stored procedure is BESDBPROD2.NEPTUNE.USP_MODEL_RAIN.  The name of
-#'that DSN is then passed to the function via the \code{DSN} argument.
 #'@param station a vector of hydra station codes; the default is the WPCL gauge
 #'@param start the start date as a \code{Date} object
 #'@param end the end date as a \code{Date} object
@@ -23,7 +19,7 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
                       interval = 1, dsn = NULL, format = T){
   con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
-
+  stopifnot(is.Date(start), is.Date(end))
   make.queries <- function(start, end, interval, daypart, station){
     qry <- sprintf("{call USP_MODEL_RAIN('%s', '%s', %s, '%s', %s)}",
                    format(start), format(end), interval, daypart, station)
