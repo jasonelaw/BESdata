@@ -5,7 +5,7 @@
 \title{Submits a query to JANUS database}
 \usage{
 read.janus(..., start = NULL, end = NULL, dsn = NULL,
-  date.field = "sample_end_time")
+  date.field = "sample_end_time", as.text = T)
 }
 \arguments{
 \item{...}{query arguments in the form 'field = value'.}
@@ -17,6 +17,8 @@ read.janus(..., start = NULL, end = NULL, dsn = NULL,
 \item{dsn}{the dsn for the JANUS database on the current system}
 
 \item{date.field}{the field used for the start and end query arguments.}
+
+\item{as.text}{logical, return a text (TRUE) or numeric (FALSE) nondetect indicator in column `nd`.}
 }
 \value{
 a dataframe of results

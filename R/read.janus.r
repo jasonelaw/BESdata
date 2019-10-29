@@ -16,6 +16,7 @@
 #'@param end end date of data range
 #'@param dsn the dsn for the JANUS database on the current system
 #'@param date.field the field used for the start and end query arguments.
+#'@param as.text logical, return a text (TRUE) or numeric (FALSE) nondetect indicator in column `nd`.
 #'@return a dataframe of results
 #'@export
 #'@author Jason Law jlaw@@portlandoregon.gov
@@ -28,7 +29,7 @@
 #'#Get the last 2 weeks of data
 #'read.janus(start = Sys.Date() - 14)
 #'}
-read.janus <- function (..., start = NULL, end = NULL, dsn = NULL,  date.field = 'sample_end_time'){
+read.janus <- function (..., start = NULL, end = NULL, dsn = NULL,  date.field = 'sample_end_time', as.text = T){
   con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   table  <- 'JANUS_ELEMENT'#"V_RPT_JANUS_ELEMENT"
@@ -40,12 +41,26 @@ read.janus <- function (..., start = NULL, end = NULL, dsn = NULL,  date.field =
   kSort  <- c('location_code', 'method_code', 'janus_analyte_name', 'sample_end_time')
   kDates <- c('sample_begin_time', 'sample_end_time', 'update_date')
   ret <- formatDataFrame(ret, sort = kSort, date = kDates, parseDate = parseLocalTime)
-  ret$combined_result <- ifelse(is.na(ret$combined_result), ret$numeric_result, ret$combined_result)
-  ret$text_result     <- ret$combined_result
-  ret$nd <- stringi::stri_extract_first_regex(ret$combined_result, '^[<>]')
-  ret$numeric_result <- stringi::stri_replace_all_regex(ret$combined_result, '^[<>=]{1,2}|^EST', '')
-  ret$numeric_result <- suppressWarnings(as.numeric(ret$numeric_result))
+  ret$nd             <- parse.nd(ret$combined_result, as.text = as.text)
+  ret$numeric_result <- parse.result(ret$combined_result)
   return(ret)
+}
+
+parse.nd <- function(x, as.text = T){
+  lt <- stri_detect_fixed(x, '<')
+  gt <- stri_detect_fixed(x, '>')
+  nd <- ifelse(lt, -1, ifelse(gt, 1, 0))
+  if (as.text){
+    nd <- factor(nd, levels = -1:1, labels = c('<', '', '>'))
+  }
+  nd
+}
+
+parse.result <- function(x){
+  annotations <- c("<", "EST", ">", "*")
+  ret <- stri_replace_all_fixed(x, annotations, rep("", length(annotations)), vectorize_all = F)
+  suppressWarnings(ret <- as.numeric(ret))
+  ret
 }
 
 i <- c("janus_project_name",
