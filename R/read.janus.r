@@ -63,10 +63,84 @@ parse.result <- function(x){
   ret
 }
 
-i <- c("janus_project_name",
-  "location_code", "sample_point", "location_description", "hansen_id",
-  "sample_code", "element_sample_name", "sample_begin_time", "sample_end_time", "collected_by", "sample_type", "matrix","depth", "depth_units",
-  "element_analysis_name", "method_code", "department", "general_method",
-  "janus_analyte_name", "element_analyte_name", "result_spec", "result_op", "numeric_result", "analyte_units", "combined_result", "text_result_mdl", "text_result_mrl","qualifiers",
-  "lab",   "export_to_wqdb","comments", "Client", "update_date", "Wrk",
-  "row_id", "project_id", "location_id", "analyte_result_id", "janus_sample_id","analyte_id")
+check.units <- function(unit, f){
+  n.units <- vapply(split(unit, f), dplyr::n_distinct, FUN.VALUE = integer(1))
+  if(any(n.units > 1)){
+    warning("Some analytes have unit mismatches.")
+  }
+  n.units[n.units > 1]
+}
+
+# assign.units <- function(x, units){
+#   sx <- split(x, units)
+#   nsx <- names(sx)
+#   ret <- lapply(nsx, function(i){
+#     set_units(sx[[i]], i, mode = 'standard')
+#   })
+#
+# }
+#
+# simple <- c("project_name", "location_code", "sample_code", "sample_name", "sample_type", "matrix", "sample_end_time",
+#             "analyte_name", "nd", "numeric_result", "analyte_units")
+
+
+# i <- c("Client", "project_name",
+#   "location_code", "location_description", "hansen_id",
+#   "sample_code", "Wrk", "sample_point","sample_name", "sample_begin_time", "sample_end_time", "collected_by", "sample_type", "matrix","depth", "depth_units",
+#   "janus_analyte_name", "element_analyte_name", "result_spec", "result_op", "numeric_result", "analyte_units", "combined_result", "text_result_mdl", "text_result_mrl","qualifiers",
+#   "analysis_name", "method_code", "general_method", "lab", "department",  "export_to_wqdb","comments", "update_date",
+#   "row_id", "project_id", "location_id", "analyte_result_id", "janus_sample_id", "analyte_id")
+#
+# c(
+#   "sample_point", "location_description", "sample_name", "sample_begin_time",
+#   "sample_end_time", "sample_type", "matrix", "method_code", "analysis_name",
+#   "analyte_id", "analyte_name", "janus_analyte_name", "result_spec",
+#   "result_op", "numeric_result", "analyte_units", "combined_result",
+#   "text_result_mdl", "text_result_mrl", "lab", "project_id",
+#   "export_to_wqdb", "comments", "qualifiers",
+#   "analyte_result_id", "janus_sample_id", "collected_by", "department",
+#   "general_method", "Client", "update_date", "Wrk", "prepared",
+#   "analyzed", "dilution", "cas", "epaitn", "storm_affected", "nd"
+# )
+
+#'@export
+getProject <- function(..., dsn = NULL){
+  con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  on.exit(dbDisconnect(con))
+  where <- constructWhereStatement(..., start = NULL)
+  query <- constructQuery('PROJECT', where, unrestricted = F)
+  ret <- dbGetQuery(con, query)
+  return(ret)
+}
+
+#'@export
+getLocation <- function(..., dsn = NULL){
+  con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  on.exit(dbDisconnect(con))
+  where <- constructWhereStatement(..., start = NULL)
+  query <- constructQuery('LOCATION', where, unrestricted = F)
+  ret <- dbGetQuery(con, query)
+  return(ret)
+}
+
+#'@export
+getLocationByProject <- function(..., dsn = NULL){
+  con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  on.exit(dbDisconnect(con))
+  proj  <- getProject(...)
+  query <- constructQuery('V_PROJECT_LOCATIONS', constructWhereStatement(project_id = proj$project_id, start = NULL), unrestricted = F)
+  locs  <- dbGetQuery(con, query)
+  ret   <- getLocation(location_id = locs$location_id)
+  return(ret)
+}
+
+#'@export
+getProjectByLocation <- function(..., dsn = NULL){
+  con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  on.exit(dbDisconnect(con))
+  locs  <- getLocation(...)
+  query <- constructQuery('V_PROJECT_LOCATIONS', constructWhereStatement(location_id = locs$location_id, start = NULL), unrestricted = F)
+  proj  <- dbGetQuery(con, query)
+  ret   <- getProject(project_id = proj$project_id)
+  return(ret)
+}

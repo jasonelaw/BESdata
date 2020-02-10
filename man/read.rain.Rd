@@ -4,9 +4,15 @@
 \alias{read.rain}
 \title{Retrieve rain data from City of Portland Hydra network.}
 \usage{
-read.rain(station = 160, start = end - 7, end = Sys.Date(),
-  daypart = c("day", "hour", "minute", "month", "year"), interval = 1,
-  dsn = NULL, format = T)
+read.rain(
+  station = 160,
+  start = end - 7,
+  end = Sys.Date(),
+  daypart = c("day", "hour", "minute", "month", "year"),
+  interval = 1,
+  dsn = NULL,
+  format = T
+)
 }
 \arguments{
 \item{station}{a vector of hydra station codes; the default is the WPCL gauge}
@@ -32,9 +38,4 @@ The City of Portland operates a rain gauge network.  This function retrieves
 rain data from the SQL server database using the USP_MODEL_RAIN stored procedure.
 The stored procedure summarizes the data within a prespecified period of time
 (e.g., hourly) and returns the summarized data rather than raw tips.
-}
-\details{
-A DSN for the Hydra database must be set up on your machine. The current location of
-the stored procedure is BESDBPROD2.NEPTUNE.USP_MODEL_RAIN.  The name of
-that DSN is then passed to the function via the \code{DSN} argument.
 }

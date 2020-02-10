@@ -4,8 +4,14 @@
 \alias{read.janus}
 \title{Submits a query to JANUS database}
 \usage{
-read.janus(..., start = NULL, end = NULL, dsn = NULL,
-  date.field = "sample_end_time", as.text = T)
+read.janus(
+  ...,
+  start = NULL,
+  end = NULL,
+  dsn = NULL,
+  date.field = "sample_end_time",
+  as.text = T
+)
 }
 \arguments{
 \item{...}{query arguments in the form 'field = value'.}

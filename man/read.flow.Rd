@@ -4,8 +4,13 @@
 \alias{read.flow}
 \title{Retrieve flow data from Janus}
 \usage{
-read.flow(..., start = NULL, end = NULL, dsn = NULL,
-  date.field = "reading_datetime")
+read.flow(
+  ...,
+  start = NULL,
+  end = NULL,
+  dsn = NULL,
+  date.field = "reading_datetime"
+)
 }
 \arguments{
 \item{...}{query arguments in the form 'field = value'}
