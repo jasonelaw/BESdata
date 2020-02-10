@@ -108,7 +108,7 @@ getProject <- function(..., dsn = NULL){
   con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   where <- constructWhereStatement(..., start = NULL)
-  query <- constructQuery('PROJECT', where, unrestricted = F)
+  query <- constructQuery('PROJECT', where, unrestricted = T)
   ret <- dbGetQuery(con, query)
   return(ret)
 }
