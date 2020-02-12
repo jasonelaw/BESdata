@@ -18,7 +18,7 @@ constructQuery <- function(table, where, unrestricted, fields = '*', distinct = 
   if(is.unrestricted && !unrestricted){
     stop("The where argument cannot be an empty string when unrestricted = FALSE.")
   }
-  qry <- if(is.unrestricted) "SELECT %s%s FROM %s%s;" else "SELECT %s FROM %s WHERE %s;"
+  qry <- if(is.unrestricted) "SELECT %s%s FROM %s%s;" else "SELECT %s%s FROM %s WHERE %s;"
   query <- sprintf(qry,if(distinct) "DISTINCT " else "", fields, table, where)
   query
 }
