@@ -12,14 +12,14 @@ compose <- function (...){
   }
 }
 
-constructQuery <- function(table, where, unrestricted, fields = '*'){
+constructQuery <- function(table, where, unrestricted, fields = '*', distinct = F){
   stopifnot(is.character(table), is.character(where), is.logical(unrestricted))
   is.unrestricted <- identical(stringi::stri_length(where), 0L)
   if(is.unrestricted && !unrestricted){
     stop("The where argument cannot be an empty string when unrestricted = FALSE.")
   }
-  qry <- if(is.unrestricted) "SELECT %s FROM %s%s;" else "SELECT %s FROM %s WHERE %s;"
-  query <- sprintf(qry, fields, table, where)
+  qry <- if(is.unrestricted) "SELECT %s %s FROM %s%s;" else "SELECT %s FROM %s WHERE %s;"
+  query <- sprintf(qry,if(distinct) "DISTINCT" else "", fields, table, where)
   query
 }
 
