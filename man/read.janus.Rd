@@ -10,7 +10,8 @@ read.janus(
   end = NULL,
   dsn = NULL,
   date.field = "sample_end_time",
-  as.text = T
+  as.text = T,
+  simple = F
 )
 }
 \arguments{

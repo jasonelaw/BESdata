@@ -29,17 +29,23 @@
 #'#Get the last 2 weeks of data
 #'read.janus(start = Sys.Date() - 14)
 #'}
-read.janus <- function (..., start = NULL, end = NULL, dsn = NULL,  date.field = 'sample_end_time', as.text = T){
+read.janus <- function (..., start = NULL, end = NULL, dsn = NULL,  date.field = 'sample_end_time', as.text = T, simple = F){
   con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   table  <- 'JANUS_ELEMENT'#"V_RPT_JANUS_ELEMENT"
+  if(simple){
+    fields <- c("project_name", "location_code", "sample_code", "sample_name", "sample_type", "matrix",
+                "sample_begin_time", "sample_end_time", "janus_analyte_name", "combined_result", "analyte_units", "method_code")
+  } else {
+    fields <- "*"
+  }
   where <- constructWhereStatement(..., start = start, end = end,
                                    date.field = date.field)
-  query <- constructQuery(table, where, unrestricted = F)
+  query <- constructQuery(table, where, unrestricted = F, fields = fields)
   ret <- dbGetQuery(con, query)
 
   kSort  <- c('location_code', 'method_code', 'janus_analyte_name', 'sample_end_time')
-  kDates <- c('sample_begin_time', 'sample_end_time', 'update_date')
+  kDates <- c('sample_begin_time', 'sample_end_time')
   ret <- formatDataFrame(ret, sort = kSort, date = kDates, parseDate = parseLocalTime)
   ret$nd             <- parse.nd(ret$combined_result, as.text = as.text)
   ret$numeric_result <- parse.result(ret$combined_result)
@@ -80,28 +86,6 @@ check.units <- function(unit, f){
 #
 # }
 #
-# simple <- c("project_name", "location_code", "sample_code", "sample_name", "sample_type", "matrix", "sample_end_time",
-#             "analyte_name", "nd", "numeric_result", "analyte_units")
-
-
-# i <- c("Client", "project_name",
-#   "location_code", "location_description", "hansen_id",
-#   "sample_code", "Wrk", "sample_point","sample_name", "sample_begin_time", "sample_end_time", "collected_by", "sample_type", "matrix","depth", "depth_units",
-#   "janus_analyte_name", "element_analyte_name", "result_spec", "result_op", "numeric_result", "analyte_units", "combined_result", "text_result_mdl", "text_result_mrl","qualifiers",
-#   "analysis_name", "method_code", "general_method", "lab", "department",  "export_to_wqdb","comments", "update_date",
-#   "row_id", "project_id", "location_id", "analyte_result_id", "janus_sample_id", "analyte_id")
-#
-# c(
-#   "sample_point", "location_description", "sample_name", "sample_begin_time",
-#   "sample_end_time", "sample_type", "matrix", "method_code", "analysis_name",
-#   "analyte_id", "analyte_name", "janus_analyte_name", "result_spec",
-#   "result_op", "numeric_result", "analyte_units", "combined_result",
-#   "text_result_mdl", "text_result_mrl", "lab", "project_id",
-#   "export_to_wqdb", "comments", "qualifiers",
-#   "analyte_result_id", "janus_sample_id", "collected_by", "department",
-#   "general_method", "Client", "update_date", "Wrk", "prepared",
-#   "analyzed", "dilution", "cas", "epaitn", "storm_affected", "nd"
-# )
 
 #'@export
 getProject <- function(..., dsn = NULL){
@@ -142,5 +126,20 @@ getProjectByLocation <- function(..., dsn = NULL){
   query <- constructQuery('V_PROJECT_LOCATIONS', constructWhereStatement(location_id = locs$location_id, start = NULL), unrestricted = F)
   proj  <- dbGetQuery(con, query)
   ret   <- getProject(project_id = proj$project_id)
+  return(ret)
+}
+
+#'@export
+getSample <- function(..., start = NULL, end = NULL, date.field = 'sample_end_time', dsn = NULL){
+  con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  on.exit(dbDisconnect(con))
+  table  <- 'JANUS_ELEMENT'#"V_RPT_JANUS_ELEMENT"
+  fields <- c("location_code", "sample_code", "sample_name", "sample_point", "sample_begin_time",
+              "sample_end_time", "sample_type", "matrix")
+  where <- constructWhereStatement(..., start = start, end = end,
+                                   date.field = date.field)
+  query <- constructQuery(table, where, unrestricted = F,
+                          fields = fields, distinct = T)
+  ret <- dbGetQuery(con, query)
   return(ret)
 }

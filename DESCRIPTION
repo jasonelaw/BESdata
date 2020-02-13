@@ -12,9 +12,11 @@ Description: Retrieves data from City of Portland Bureau of Environmental
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+
 Imports:
     plyr,
     RODBC,
     lubridate,
-    checkmate
+    checkmate,
+    stringi
 RoxygenNote: 7.0.0

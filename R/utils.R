@@ -19,7 +19,7 @@ constructQuery <- function(table, where, unrestricted, fields = '*', distinct = 
     stop("The where argument cannot be an empty string when unrestricted = FALSE.")
   }
   qry <- if(is.unrestricted) "SELECT %s%s FROM %s%s;" else "SELECT %s%s FROM %s WHERE %s;"
-  query <- sprintf(qry,if(distinct) "DISTINCT " else "", fields, table, where)
+  query <- sprintf(qry,if(distinct) "DISTINCT " else "", toString(fields), table, where)
   query
 }
 
@@ -75,9 +75,8 @@ constructWhereStatement <- function(..., start = Sys.Date() - 30, end = NULL,
 }
 
 # Fix times: times in NEPTUNE are UTC-08:00.  Create local times from these.
-#'@import stringi
 parseUTCm8Time <- function(x, tz = "America/Los_angeles"){
-  x <- stri_join(x, " -08:00")
+  x <- stringi::stri_join(x, " -08:00")
   lubridate::ymd_hms(x, quiet = TRUE, tz = tz)
 }
 
