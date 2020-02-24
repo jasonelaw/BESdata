@@ -98,23 +98,27 @@ getProject <- function(..., dsn = NULL){
 }
 
 #'@export
-getLocation <- function(..., dsn = NULL){
+getLocation <- function(..., dsn = NULL, as.sf = FALSE){
   con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   where <- constructWhereStatement(..., start = NULL)
   query <- constructQuery('LOCATION', where, unrestricted = F)
   ret <- dbGetQuery(con, query)
+  ret <- formatDataFrame(ret, numeric = c('longitude', 'latitude'))
+  if(as.sf){
+    ret <- sf::st_as_sf(ret, coords = c("longitude", "latitude"), crs = 4326)
+  }
   return(ret)
 }
 
 #'@export
-getLocationByProject <- function(..., dsn = NULL){
+getLocationByProject <- function(..., dsn = NULL, as.sf = FALSE){
   con <- if(is.null(dsn)){ dbConnect(database = 'JANUS') } else { dbConnect(database = 'DSN', dsn = dsn) }
   on.exit(dbDisconnect(con))
   proj  <- getProject(...)
   query <- constructQuery('V_PROJECT_LOCATIONS', constructWhereStatement(project_id = proj$project_id, start = NULL), unrestricted = F)
   locs  <- dbGetQuery(con, query)
-  ret   <- getLocation(location_id = locs$location_id)
+  ret   <- getLocation(location_id = locs$location_id, as.sf = as.sf)
   return(ret)
 }
 
