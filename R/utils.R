@@ -85,13 +85,12 @@ parseLocalTime <- function(x){
 }
 
 #'@import stringi
-#'@import checkmate
 formatDataFrame <- function(x, drop = NULL, sort = NULL,
                             date = NULL, numeric = NULL, bool = NULL, true.value = NULL,
                             parseDate = parseLocalTime){
-  checkmate::assertClass(x, 'data.frame')
+
   nms <- names(x)
-  checkmate::assertSubset(c(drop, sort, date, bool), choices = nms)
+  stopifnot(inherits(x, 'data.frame'), all(is.element(c(drop, sort, date, bool), nms)))
 
   # parse dates
   #local <- stri_join(utcm8, '.local')
