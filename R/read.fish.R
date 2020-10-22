@@ -31,11 +31,21 @@
 #'@export
 read.fish <- function(..., start = end - 7, end = Sys.Date(), dsn = NULL){
   on.exit(dbDisconnect(con))
+  kFishView <- "V_RPT_WATERSHED"
   where <- constructWhereStatement(..., start = start, end = end,
                                    date.field = 'collection_start_date')
-  kFishView     <- "V_RPT_WATERSHED"
-  con <- if(is.null(dsn)){ dbConnect(database = 'WATERSHED') } else { dbConnect(database = 'DSN', dsn = dsn) }
   query <- constructQuery(kFishView, where, unrestricted = TRUE)
-  ret   <- dbGetQuery(con, query)
+
+  con <- connectWatershed(dsn)
+  ret <- dbGetQuery(con, query)
   return(ret)
+}
+
+connectWatershed <- function(dsn = NULL){
+  con <- if(is.null(dsn)){
+    dbConnect(database = 'WATERSHED')
+  } else {
+    dbConnect(database = 'DSN', dsn = dsn)
+  }
+  con
 }
