@@ -10,7 +10,7 @@ read.rain(
   end = Sys.Date(),
   daypart = c("day", "hour", "minute", "month", "year"),
   interval = 1,
-  dsn = NULL,
+  server = NULL,
   format = T
 )
 }
@@ -25,10 +25,10 @@ read.rain(
 
 \item{interval}{the interval over which the data should be summarized}
 
-\item{dsn}{Alternate dsn for the NEPTUNE database - for access to production or test instances.}
-
 \item{format}{logical, TRUE will perform some data formatting, FALSE will return the data.frame exactly
 as it was returned by the database}
+
+\item{dsn}{Alternate dsn for the NEPTUNE database - for access to production or test instances.}
 }
 \value{
 a data.frame of rain data

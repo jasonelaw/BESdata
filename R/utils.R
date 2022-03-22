@@ -84,7 +84,6 @@ parseLocalTime <- function(x){
   lubridate::ymd_hms(x, quiet = TRUE, tz = 'America/Los_angeles')
 }
 
-#'@import stringi
 formatDataFrame <- function(x, drop = NULL, sort = NULL,
                             date = NULL, numeric = NULL, bool = NULL, true.value = NULL,
                             parseDate = parseLocalTime){

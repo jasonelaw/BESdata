@@ -18,7 +18,7 @@
 #'@param ... query parameters in \code{tag = value} form
 #'@param start an object of class Date; the earliest survey start date to retrieve
 #'@param end an object of class Date; the latest survey start date to retrieve
-#'@param dsn Alternate dsn for the WATERSHED database - for access to production or test instances.
+#'@param server Alternate server for the WATERSHED database - for access to production or test instances.
 #'@examples
 #'\dontrun{
 #'#List the available fields
@@ -29,23 +29,15 @@
 #'d <- read.fish(start = as.Date('2017-01-01'), end = as.Date('2017-03-01'))
 #'}
 #'@export
-read.fish <- function(..., start = end - 7, end = Sys.Date(), dsn = NULL){
+read.fish <- function(..., start = end - 7, end = Sys.Date(), server = NULL){
   on.exit(dbDisconnect(con))
   kFishView <- "V_RPT_WATERSHED"
   where <- constructWhereStatement(..., start = start, end = end,
                                    date.field = 'collection_start_date')
   query <- constructQuery(kFishView, where, unrestricted = TRUE)
 
-  con <- connectWatershed(dsn)
+  con <- dbConnect(database = "WATERSHED", server = server)
   ret <- dbGetQuery(con, query)
   return(ret)
 }
 
-connectWatershed <- function(dsn = NULL){
-  con <- if(is.null(dsn)){
-    dbConnect(database = 'WATERSHED')
-  } else {
-    dbConnect(database = 'DSN', dsn = dsn)
-  }
-  con
-}

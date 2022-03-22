@@ -16,10 +16,10 @@
 #'@export
 read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
                       daypart = c('day','hour', 'minute', 'month', 'year'),
-                      interval = 1, dsn = NULL, format = T){
-  con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
+                      interval = 1, server = NULL, format = T){
+  con <- dbConnect(database = 'NEPTUNE', server = server)
   on.exit(dbDisconnect(con))
-  stopifnot(is.Date(start), is.Date(end))
+  stopifnot(lubridate::is.Date(start), lubridate::is.Date(end))
   make.queries <- function(start, end, interval, daypart, station){
     qry <- sprintf("{call USP_MODEL_RAIN('%s', '%s', %s, '%s', %s)}",
                    format(start), format(end), interval, daypart, station)
@@ -31,7 +31,7 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
   # Format args and get data
   daypart <- match.arg(daypart)
   args <- data.frame(station, start, end, daypart, interval)
-  rain <- plyr::mdply(args, make.queries)
+  rain <- purrr::pmap_dfr(args, make.queries)
   if (format){
     formatRain(rain, interval, daypart)
   } else {
@@ -45,7 +45,6 @@ calculateEndTime <- function(x, interval, daypart){
   x$start.utc + lubridate::period(interval, daypart)
 }
 
-#'@import dplyr
 #'@importMethodsFrom lubridate +
 formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
   x        <- merge(x, stations(), by.x = 'h2_number',
@@ -69,9 +68,9 @@ formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
   return(x)
 }
 
-stations <- function(dsn = NULL, local.tz = 'America/Los_angeles')
+stations <- function(server = NULL, local.tz = 'America/Los_angeles')
 {
-  con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  con <- dbConnect(database = 'NEPTUNE', server = server)
   on.exit(dbDisconnect(con))
   qry <- c("
            SELECT DISTINCT STATION.h2_number as station,
