@@ -38,7 +38,7 @@ read.bird.survey <- function (..., start = NULL, end = NULL, server = NULL,
   ret <- formatDataFrame(
     ret,
     date = c("survey_start", "survey_end"),
-    numeric = "decibel",
+    numeric = "sound_meter_decibals",
     drop = c("avian_project_id", "avian_point_count_species_data_id", "avian_species_id", "avian_time_bracket_id",
              "avian_detection_type_id", "avian_detection_code_id", "is_flock_id", "is_juvenile_id"),
     bool = c("is_flock_name", "is_juvenile_name"), true.value = "Yes")
