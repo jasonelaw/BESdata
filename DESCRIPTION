@@ -19,5 +19,7 @@ Imports:
     dplyr,
     purrr,
     stringi,
-    sf
-RoxygenNote: 7.1.2
+    sf,
+    glue,
+    tibble
+RoxygenNote: 7.2.1

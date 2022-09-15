@@ -2,6 +2,7 @@
 % Please edit documentation in R/read.janus.r
 \name{read.janus}
 \alias{read.janus}
+\alias{read.janus.location}
 \title{Submits a query to JANUS database}
 \usage{
 read.janus(
@@ -14,6 +15,8 @@ read.janus(
   as.text = T,
   simple = F
 )
+
+read.janus.location(..., server = NULL, as.sf = TRUE)
 }
 \arguments{
 \item{...}{query arguments in the form 'field = value'.}

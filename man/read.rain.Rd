@@ -2,6 +2,7 @@
 % Please edit documentation in R/read.rain.r
 \name{read.rain}
 \alias{read.rain}
+\alias{read.rain.locations}
 \title{Retrieve rain data from City of Portland Hydra network.}
 \usage{
 read.rain(
@@ -13,6 +14,8 @@ read.rain(
   server = NULL,
   format = T
 )
+
+read.rain.locations(server = NULL)
 }
 \arguments{
 \item{station}{a vector of hydra station codes; the default is the WPCL gauge}

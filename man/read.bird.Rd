@@ -29,11 +29,11 @@ Reads point count data and survey information from BES watershed database
 }
 \section{Functions}{
 \itemize{
-\item \code{read.bird}: Read point count data
+\item \code{read.bird()}: Read point count data
 
-\item \code{read.bird.survey}: Read point count survey information
+\item \code{read.bird.survey()}: Read point count survey information
+
 }}
-
 \examples{
 \dontrun{
 #Get some data

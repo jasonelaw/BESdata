@@ -103,8 +103,9 @@ check.units <- function(unit, f){
 #   return(ret)
 # }
 
+#'@rdname read.janus
 #'@export
-getLocation <- function(..., server = NULL, as.sf = TRUE){
+read.janus.location <- function(..., server = NULL, as.sf = TRUE){
   fields <- c("location_id", "active_flow_monitoring_location", "active_sampling_location",
     "location_code", "location_description", "flow_control_type_id",
     "manhole_hansen_id", "pipe_hansen_compkey", "distance_from_manhole_inches",
@@ -122,7 +123,8 @@ getLocation <- function(..., server = NULL, as.sf = TRUE){
   ret <- dbGetQuery(con, query)
   ret <- formatDataFrame(ret, numeric = c('longitude', 'latitude'))
   if(as.sf){
-    ret <- sf::st_as_sf(ret, coords = c("longitude", "latitude"), crs = 4326)
+    ret <- sf::st_as_sf(ret, coords = c("longitude", "latitude"), crs = 4326L) |>
+      st_tranform(crs = 2913L)
   }
   return(ret)
 }

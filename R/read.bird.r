@@ -21,6 +21,12 @@ read.bird <- function (..., start = NULL, end = NULL, server = NULL){
   query <- constructQuery(kView, where, unrestricted = TRUE)
   con <- dbConnect("WATERSHED", server = server)
   ret <- dbGetQuery(con, query)
+  ret <- formatDataFrame(
+    ret,
+    date = c("survey_start"),
+    drop = c("avian_project_id", "avian_species_id", "avian_time_bracket_id",
+             "avian_detection_type_id", "avian_detection_code_id", "is_flock_id", "is_juvenile_id"),
+    bool = c("is_flock_name", "is_juvenile_name"), true.value = "Yes")
   return(ret)
 }
 
@@ -39,8 +45,7 @@ read.bird.survey <- function (..., start = NULL, end = NULL, server = NULL,
     ret,
     date = c("survey_start", "survey_end"),
     numeric = "sound_meter_decibals",
-    drop = c("avian_project_id", "avian_point_count_species_data_id", "avian_species_id", "avian_time_bracket_id",
-             "avian_detection_type_id", "avian_detection_code_id", "is_flock_id", "is_juvenile_id"),
-    bool = c("is_flock_name", "is_juvenile_name"), true.value = "Yes")
+    drop = c("avian_project_id", "avian_beaufort_scale_id", "avian_noise_scale_id", "avian_observer_id", "cloud_cover_id", "drizzle_id", "wind_category_id")
+  )
   return(ret)
 }
