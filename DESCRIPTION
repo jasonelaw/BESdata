@@ -7,15 +7,19 @@ Maintainer: Jason Law <jason.law@portlandoregon.gov>
 Description: Retrieves data from City of Portland Bureau of Environmental
     Services databases. Supported data sets include environmental sample data from
     the Janus database, rain gauge data from Neptune, and fish sampling data from
-    the Watershed database. Database objects to which the user needs permission include: JANUS.V_METER_VISIT_LIST_NARROW,
-    JANUS.METER_READING, WATERSHED.V_RPT_WATERSHED, JANUS.JANUS_ELEMENT, and NEPTUNE.USP_MODEL_RAIN.
+    the Watershed database. Database objects to which the user needs permission 
+    include: JANUS.V_METER_VISIT_LIST_NARROW,JANUS.METER_READING, 
+    WATERSHED.V_RPT_WATERSHED, JANUS.JANUS_ELEMENT, and NEPTUNE.USP_MODEL_RAIN.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-    plyr,
-    RODBC,
+    odbc,
     lubridate,
-    checkmate,
-    stringi
-RoxygenNote: 7.0.2
+    dplyr,
+    purrr,
+    stringi,
+    sf,
+    glue,
+    tibble
+RoxygenNote: 7.2.1

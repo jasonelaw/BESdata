@@ -2,17 +2,21 @@
 % Please edit documentation in R/read.janus.r
 \name{read.janus}
 \alias{read.janus}
+\alias{read.janus.location}
 \title{Submits a query to JANUS database}
 \usage{
 read.janus(
   ...,
   start = NULL,
   end = NULL,
-  dsn = NULL,
+  what = c("data", "location"),
+  server = NULL,
   date.field = "sample_end_time",
   as.text = T,
   simple = F
 )
+
+read.janus.location(..., server = NULL, as.sf = TRUE)
 }
 \arguments{
 \item{...}{query arguments in the form 'field = value'.}
@@ -21,11 +25,13 @@ read.janus(
 
 \item{end}{end date of data range}
 
-\item{dsn}{the dsn for the JANUS database on the current system}
+\item{what}{whether to return data or locations only. \code{start} and \code{end} are ignored if locations}
 
 \item{date.field}{the field used for the start and end query arguments.}
 
 \item{as.text}{logical, return a text (TRUE) or numeric (FALSE) nondetect indicator in column `nd`.}
+
+\item{dsn}{the dsn for the JANUS database on the current system}
 }
 \value{
 a dataframe of results
@@ -53,5 +59,5 @@ read.janus(start = Sys.Date() - 14)
 }
 }
 \author{
-Jason Law jlaw@portlandoregon.gov
+Jason Law \email{jason.law@portlandoregon.gov}
 }

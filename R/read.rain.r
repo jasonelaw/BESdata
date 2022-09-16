@@ -16,10 +16,10 @@
 #'@export
 read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
                       daypart = c('day','hour', 'minute', 'month', 'year'),
-                      interval = 1, dsn = NULL, format = T){
-  con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
+                      interval = 1, server = NULL, format = T){
+  con <- dbConnect(database = 'NEPTUNE', server = server)
   on.exit(dbDisconnect(con))
-  stopifnot(is.Date(start), is.Date(end))
+  stopifnot(lubridate::is.Date(start), lubridate::is.Date(end))
   make.queries <- function(start, end, interval, daypart, station){
     qry <- sprintf("{call USP_MODEL_RAIN('%s', '%s', %s, '%s', %s)}",
                    format(start), format(end), interval, daypart, station)
@@ -31,7 +31,7 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
   # Format args and get data
   daypart <- match.arg(daypart)
   args <- data.frame(station, start, end, daypart, interval)
-  rain <- plyr::mdply(args, make.queries)
+  rain <- purrr::pmap_dfr(args, make.queries)
   if (format){
     formatRain(rain, interval, daypart)
   } else {
@@ -45,10 +45,9 @@ calculateEndTime <- function(x, interval, daypart){
   x$start.utc + lubridate::period(interval, daypart)
 }
 
-#'@import dplyr
 #'@importMethodsFrom lubridate +
 formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
-  x        <- merge(x, stations(), by.x = 'h2_number',
+  x        <- merge(x, read.rain.locations(), by.x = 'h2_number',
                        by = 'station', all.x = T)
   names(x) <- gsub('_', '.', names(x), fixed = T)
   x$rainfall.amount.inches <- as.numeric(x$rainfall.amount.inches)
@@ -63,20 +62,21 @@ formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
                "x", "y",
                "start.local", "end.local", "rainfall.amount.inches",
                "sensor.present", "downtime",  "station.id")
-  x <- plyr::arrange(x, h2.number, start.local)
+  x <- dplyr::arrange(x, h2.number, start.local)
   x <- x[,kFields]
   class(x) <- c('intervalrain', 'data.frame')
   return(x)
 }
 
-stations <- function(dsn = NULL, local.tz = 'America/Los_angeles')
+#'@rdname read.rain
+#'@export
+read.rain.locations <- function(server = NULL)
 {
-  con <- if(is.null(dsn)){ dbConnect(database = 'NEPTUNE') } else { dbConnect(database = 'DSN', dsn = dsn) }
+  con <- dbConnect(database = 'NEPTUNE', server = server)
   on.exit(dbDisconnect(con))
   qry <- c("
-           SELECT DISTINCT STATION.h2_number as station,
-                           STATION.station_id,
-                           STATION.station_name,
+           SELECT DISTINCT STATION.h2_number as location_id,
+                           STATION.station_name as location_name,
                            STATION.state_plane_x_ft AS x,
                            STATION.state_plane_y_ft AS y,
                            STATION.start_date       AS station_start,
@@ -86,7 +86,7 @@ stations <- function(dsn = NULL, local.tz = 'America/Los_angeles')
 
   res$station_start <- parseUTCm8Time(res$station_start)
   res$station_end   <- parseUTCm8Time(res$station_end)
-  names(res) <- gsub('_', '.', names(res), fixed = T)
+  res <- sf::st_as_sf(tibble::as_tibble(res), coords = c("x", "y"), crs = 2913)
   res
 }
 

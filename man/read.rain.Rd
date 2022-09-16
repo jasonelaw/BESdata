@@ -2,6 +2,7 @@
 % Please edit documentation in R/read.rain.r
 \name{read.rain}
 \alias{read.rain}
+\alias{read.rain.locations}
 \title{Retrieve rain data from City of Portland Hydra network.}
 \usage{
 read.rain(
@@ -10,9 +11,11 @@ read.rain(
   end = Sys.Date(),
   daypart = c("day", "hour", "minute", "month", "year"),
   interval = 1,
-  dsn = NULL,
+  server = NULL,
   format = T
 )
+
+read.rain.locations(server = NULL)
 }
 \arguments{
 \item{station}{a vector of hydra station codes; the default is the WPCL gauge}
@@ -25,10 +28,10 @@ read.rain(
 
 \item{interval}{the interval over which the data should be summarized}
 
-\item{dsn}{Alternate dsn for the NEPTUNE database - for access to production or test instances.}
-
 \item{format}{logical, TRUE will perform some data formatting, FALSE will return the data.frame exactly
 as it was returned by the database}
+
+\item{dsn}{Alternate dsn for the NEPTUNE database - for access to production or test instances.}
 }
 \value{
 a data.frame of rain data

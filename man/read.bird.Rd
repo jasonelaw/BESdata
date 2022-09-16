@@ -5,13 +5,13 @@
 \alias{read.bird.survey}
 \title{Read point count data from Watershed database}
 \usage{
-read.bird(..., start = NULL, end = NULL, dsn = NULL)
+read.bird(..., start = NULL, end = NULL, server = NULL)
 
 read.bird.survey(
   ...,
   start = NULL,
   end = NULL,
-  dsn = NULL,
+  server = NULL,
   date.field = "survey_start"
 )
 }
@@ -22,18 +22,18 @@ read.bird.survey(
 
 \item{end}{an object of class Date; the latest survey start date to retrieve}
 
-\item{dsn}{Alternate dsn for the WATERSHED database - for access to production or test instances.}
+\item{server}{Alternate server for the WATERSHED database - for access to production or test instances.}
 }
 \description{
 Reads point count data and survey information from BES watershed database
 }
 \section{Functions}{
 \itemize{
-\item \code{read.bird}: Read point count data
+\item \code{read.bird()}: Read point count data
 
-\item \code{read.bird.survey}: Read point count survey information
+\item \code{read.bird.survey()}: Read point count survey information
+
 }}
-
 \examples{
 \dontrun{
 #Get some data

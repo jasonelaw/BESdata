@@ -8,7 +8,7 @@ read.flow(
   ...,
   start = NULL,
   end = NULL,
-  dsn = NULL,
+  server = NULL,
   date.field = "reading_datetime"
 )
 }
@@ -19,7 +19,7 @@ read.flow(
 
 \item{end}{end date of data range}
 
-\item{dsn}{Alternate dsn for the JANUS database - for access to production or test instances.}
+\item{server}{Alternate server for the JANUS database - for access to production or test instances.}
 
 \item{date.field}{the field used for the start and end query arguments. The default value is "reading_datetime"}
 }
@@ -50,5 +50,5 @@ an ODBC Data Source set up for the Janus database on the current computer. The r
 server version of the database is currently BESREPORTS.JANUS.
 }
 \author{
-Peter Bryant peter.bryant@portlandoregon.gov
+Peter Bryant \email{peter.bryant@portlandoregon.gov}
 }

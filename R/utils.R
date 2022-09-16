@@ -75,16 +75,15 @@ constructWhereStatement <- function(..., start = Sys.Date() - 30, end = NULL,
 }
 
 # Fix times: times in NEPTUNE are UTC-08:00.  Create local times from these.
-parseUTCm8Time <- function(x, tz = "America/Los_angeles"){
+parseUTCm8Time <- function(x, tz = "America/Los_Angeles"){
   x <- stringi::stri_join(x, " -08:00")
   lubridate::ymd_hms(x, quiet = TRUE, tz = tz)
 }
 
 parseLocalTime <- function(x){
-  lubridate::ymd_hms(x, quiet = TRUE, tz = 'America/Los_angeles')
+  lubridate::ymd_hms(x, quiet = TRUE, tz = 'America/Los_Angeles')
 }
 
-#'@import stringi
 formatDataFrame <- function(x, drop = NULL, sort = NULL,
                             date = NULL, numeric = NULL, bool = NULL, true.value = NULL,
                             parseDate = parseLocalTime){
