@@ -10,7 +10,7 @@ read.esri <- function(database = "EGH_PUBLIC", layer, query = NULL, ...){
     )
   }
   #dbGetQuery(con, statement = glue::glue(query))
-  st_read(
+  sf::st_read(
     dsn             = con,
     geometry_column = "geometry",
     as_tibble       = TRUE,
