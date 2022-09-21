@@ -124,7 +124,7 @@ read.janus.location <- function(..., server = NULL, as.sf = TRUE){
   ret <- formatDataFrame(ret, numeric = c('longitude', 'latitude'))
   if(as.sf){
     ret <- sf::st_as_sf(ret, coords = c("longitude", "latitude"), crs = 4326L) |>
-      st_tranform(crs = 2913L)
+      sf::st_tranform(crs = 2913L)
   }
   return(ret)
 }
