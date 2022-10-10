@@ -167,8 +167,26 @@ getSample <- function(..., start = NULL, end = NULL, date.field = 'sample_end_ti
   return(ret)
 }
 
-# getLabReports <- function(work_order, to = getwd()){
-#   path <- "//besfile1/ELEMENTSERVERFOLDERS/Report/_EMAIL/"
-#   dirs <- list.dirs(path, full.names = TRUE, recursive = FALSE)
-#   file.copy(files, to = )
-# }
+# # getLabReports <- function(work_order, to = getwd()){
+#   uwork <- unique(work_order)
+#   j <- match(work_order, uwork)
+#   prefix <- stringi::stri_sub(uwork, 1, 4)
+#   ret <- split(uwork, prefix)
+#   for (i in 1:length(ret)) {
+#     path <- file.path("//besfile1/ELEMENTSERVERFOLDERS/Report", names(ret)[i])
+#     files <- list.files(
+#       path = path,
+#       pattern = stringi::stri_c("^", ret[[i]], ".{1,}[.pdf]$"),
+#       full.names = TRUE
+#     )
+#   }
+#   path <- file.path("//besfile1/ELEMENTSERVERFOLDERS/Report", prefix)
+#   files <- list.files(
+#     path = path,
+#     pattern = stringi::stri_c("^", work_order, ".{1,}[.pdf]$"),
+#     full.names = TRUE
+#   )
+#    path <- "//besfile1/ELEMENTSERVERFOLDERS/Report/_EMAIL/"
+#    dirs <- list.dirs(path, full.names = TRUE, recursive = FALSE)
+#    file.copy(files, to = )
+#  }

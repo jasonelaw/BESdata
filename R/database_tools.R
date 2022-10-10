@@ -10,14 +10,15 @@ getDriver <- function(){
   return(driver)
 }
 
-dbConnect <- function(database = c("JANUS", "NEPTUNE", "WATERSHED", "EGH_PUBLIC", "SWSP"), server = NULL){
+dbConnect <- function(database = c("JANUS", "NEPTUNE", "WATERSHED", "EGH_PUBLIC", "SWSP", "MODELING"), server = NULL){
   database <- match.arg(database)
   info <- list(
     JANUS      = list(database = "JANUS",      server = "BESRPT2"),
     NEPTUNE    = list(database = "NEPTUNE",    server = "BESDBPROD1"),
     WATERSHED  = list(database = "WATERSHED",  server = "BESRPT1"),
     EGH_PUBLIC = list(database = "EGH_PUBLIC", server = "GISDB1"),
-    SWSP       = list(database = "SWSP",       server = "BESDBPROD1")
+    SWSP       = list(database = "SWSP",       server = "BESDBPROD1"),
+    MODELING   = list(database = "MODELING",   server = "BESDBPROD1")
   )
   db.info <- info[[database]]
   db.info$driver <- getDriver()
