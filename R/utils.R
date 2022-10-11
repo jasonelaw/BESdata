@@ -74,10 +74,29 @@ constructWhereStatement <- function(..., start = Sys.Date() - 30, end = NULL,
   paste(names(pars), pars, sep = ' ', collapse = " AND ")
 }
 
-# Fix times: times in NEPTUNE are UTC-08:00.  Create local times from these.
-parseUTCm8Time <- function(x, tz = "America/Los_Angeles"){
+
+#' Convert times expressed as UTC-08 into local times
+#'
+#' The \link{package:odbc} package automatically reads dates from databases into
+#' POSIXct objects. These must be converted into local time to allow for accurate
+#' calculations in R.
+#' @param x a date, either character or POSIX
+#' @export
+parseUTCm8Time <- function(x, ...) {
+  UseMethod("parseUTCm8Time", x)
+}
+
+#' @export
+parseUTCm8Time.character <- function(x, tz = "America/Los_Angeles"){
   x <- stringi::stri_join(x, " -08:00")
   lubridate::ymd_hms(x, quiet = TRUE, tz = tz)
+}
+
+#'@export
+parseUTCm8Time.POSIXt <- function(x, tz = "America/Los_Angeles") {
+  # Assume input data are UTC-08 stored in POSIXt as if it was UTC.
+  x <- with_tz(x, "America/Los_angeles") + dhours(8)
+  with_tz(x, tz)
 }
 
 parseLocalTime <- function(x){

@@ -47,24 +47,44 @@ calculateEndTime <- function(x, interval, daypart){
 
 #'@importMethodsFrom lubridate +
 formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
-  x        <- merge(x, read.rain.locations(), by.x = 'h2_number',
-                       by = 'station', all.x = T)
-  names(x) <- gsub('_', '.', names(x), fixed = T)
-  x$rainfall.amount.inches <- as.numeric(x$rainfall.amount.inches)
-  x$downtime               <- x$downtime == 'Y'
-  x$sensor.present         <- x$sensor.present == 'Y'
-  #   Fix dates
-  x$start.local   <- parseUTCm8Time(x$date.time)
-  x$end.local     <- x$start.local + lubridate::duration(interval, daypart)
-  x$date.time   <- NULL
-  #   Sort
-  kFields <- c("station.name", "h2.number", "station.start", "station.end",
-               "x", "y",
-               "start.local", "end.local", "rainfall.amount.inches",
-               "sensor.present", "downtime",  "station.id")
-  x <- dplyr::arrange(x, h2.number, start.local)
-  x <- x[,kFields]
-  class(x) <- c('intervalrain', 'data.frame')
+  kFields <- c("location_name", "location_id",
+               "start_local", "end_local", "rainfall_amount_inches",
+               "sensor_present", "downtime",  "station_id")
+  x <- read.rain.locations() |>
+    sf::st_drop_geometry() |>
+    dplyr::right_join(
+      y = x,
+      by = c("location_id" = "h2_number")
+    ) |>
+    dplyr::mutate(
+      rainfall_amount_inches = as.numeric(rainfall_amount_inches),
+      downtime = downtime == "Y",
+      sensor_present = sensor_present == "Y",
+      start_local = parseUTCm8Time(x$date_time),
+      end_local   = start_local + lubridate::duration(interval, daypart)
+    ) |>
+    dplyr::select(
+      location_id, location_name, start_local, end_local,
+      rainfall_amount_inches, sensor_present, downtime
+    )
+
+  # x        <- merge(x, read.rain.locations() |> sf::st_drop_geometry(), by.x = 'h2_number',
+  #                      by.y = 'location_id', all.x = T)
+  # #names(x) <- gsub('_', '.', names(x), fixed = T)
+  # x$rainfall_amount_inches <- as.numeric(x$rainfall_amount_inches)
+  # x$downtime               <- x$downtime == 'Y'
+  # x$sensor_present         <- x$sensor_present == 'Y'
+  # #   Fix dates
+  # x$start_local   <- parseUTCm8Time(x$date_time)
+  # x$end_local     <- x$start_local + lubridate::duration(interval, daypart)
+  # x$date_time   <- NULL
+  # #   Sort
+  # kFields <- c("location_name", "location_id",
+  #              "start_local", "end_local", "rainfall_amount_inches",
+  #              "sensor_present", "downtime",  "station_id")
+  # x <- dplyr::arrange(x, location_id, start_local)
+  # x <- x[,kFields]
+  # #class(x) <- c('intervalrain', 'data.frame')
   return(x)
 }
 
