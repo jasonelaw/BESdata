@@ -95,8 +95,8 @@ parseUTCm8Time.character <- function(x, tz = "America/Los_Angeles"){
 #'@export
 parseUTCm8Time.POSIXt <- function(x, tz = "America/Los_Angeles") {
   # Assume input data are UTC-08 stored in POSIXt as if it was UTC.
-  x <- with_tz(x, "America/Los_angeles") + dhours(8)
-  with_tz(x, tz)
+  x <- lubridate::with_tz(x, "America/Los_angeles") + lubridate::dhours(8)
+  lubridate::with_tz(x, tz)
 }
 
 parseLocalTime <- function(x){
