@@ -27,7 +27,6 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
     return(if (is.data.frame(ans)) ans else NULL)
   }
 
-
   # Format args and get data
   daypart <- match.arg(daypart)
   args <- data.frame(station, start, end, daypart, interval)
@@ -46,46 +45,24 @@ calculateEndTime <- function(x, interval, daypart){
 }
 
 #'@importMethodsFrom lubridate +
-formatRain <- function(x, interval, daypart, local.tz = "America/Los_angeles"){
-  kFields <- c("location_name", "location_id",
-               "start_local", "end_local", "rainfall_amount_inches",
-               "sensor_present", "downtime",  "station_id")
-  x <- read.rain.locations() |>
-    sf::st_drop_geometry() |>
-    dplyr::right_join(
-      y = x,
-      by = c("location_id" = "h2_number")
-    ) |>
-    dplyr::mutate(
-      rainfall_amount_inches = as.numeric(rainfall_amount_inches),
-      downtime = downtime == "Y",
-      sensor_present = sensor_present == "Y",
-      start_local = parseUTCm8Time(x$date_time),
-      end_local   = start_local + lubridate::duration(interval, daypart)
-    ) |>
-    dplyr::select(
-      location_id, location_name, start_local, end_local,
-      rainfall_amount_inches, sensor_present, downtime
-    )
-
-  # x        <- merge(x, read.rain.locations() |> sf::st_drop_geometry(), by.x = 'h2_number',
-  #                      by.y = 'location_id', all.x = T)
-  # #names(x) <- gsub('_', '.', names(x), fixed = T)
-  # x$rainfall_amount_inches <- as.numeric(x$rainfall_amount_inches)
-  # x$downtime               <- x$downtime == 'Y'
-  # x$sensor_present         <- x$sensor_present == 'Y'
-  # #   Fix dates
-  # x$start_local   <- parseUTCm8Time(x$date_time)
-  # x$end_local     <- x$start_local + lubridate::duration(interval, daypart)
-  # x$date_time   <- NULL
-  # #   Sort
-  # kFields <- c("location_name", "location_id",
-  #              "start_local", "end_local", "rainfall_amount_inches",
-  #              "sensor_present", "downtime",  "station_id")
-  # x <- dplyr::arrange(x, location_id, start_local)
-  # x <- x[,kFields]
-  # #class(x) <- c('intervalrain', 'data.frame')
-  return(x)
+formatRain <- function(x, interval, daypart, local.tz = Sys.tzone()){
+  kFields <- c(
+    "location_id", "location_name",
+    "start_local", "end_local",
+    "rainfall_amount_inches",
+    "sensor_present", "downtime",
+    "h2_number"
+  )
+  l <- read.rain.locations()
+  i <- match(x$h2_number, l$h2_number)
+  x$location_name <- l$location_name[i]
+  x$location_id   <- l$location_id[i]
+  x$rainfall_amount_inches <- as.numeric(x$rainfall_amount_inches)
+  x$downtime       <- x$downtime == "Y"
+  x$sensor_present <- x$sensor_present == "Y"
+  x$start_local    <- parseUTCm8Time(x$date_time)
+  x$end_local      <- x$start_local + lubridate::duration(interval, daypart)
+  x[, kFields]
 }
 
 #'@rdname read.rain
@@ -95,19 +72,30 @@ read.rain.locations <- function(server = NULL)
   con <- dbConnect(database = 'NEPTUNE', server = server)
   on.exit(dbDisconnect(con))
   qry <- c("
-           SELECT DISTINCT STATION.h2_number as location_id,
-                           STATION.station_name as location_name,
-                           STATION.state_plane_x_ft AS x,
-                           STATION.state_plane_y_ft AS y,
-                           STATION.start_date       AS station_start,
-                           STATION.end_date         AS station_end
-           FROM STATION INNER JOIN RAIN_SENSOR on STATION.station_id = RAIN_SENSOR.station_id;")
+    SELECT
+      STATION.station_id AS location_id,
+      STATION.h2_number as h2_number,
+      station_name AS location_name,
+      state_plane_x_ft AS x,
+      state_plane_y_ft AS y,
+      RHS.start_date AS start_date,
+      RHS.end_date AS end_date
+    FROM STATION
+    INNER JOIN (
+      SELECT
+        station_id,
+        MIN(start_date) AS start_date,
+        MAX(end_date) AS end_date
+      FROM RAIN_SENSOR
+      GROUP BY station_id
+    ) RHS
+      ON (STATION.station_id = RHS.station_id)
+    ")
   res <- dbGetQuery(con, qry)
 
-  res$station_start <- parseUTCm8Time(res$station_start)
-  res$station_end   <- parseUTCm8Time(res$station_end)
+  res$start_date <- parseUTCm8Time(res$start_date)
+  res$end_date   <- parseUTCm8Time(res$end_date)
   res <- sf::st_as_sf(tibble::as_tibble(res), coords = c("x", "y"), crs = 2913)
   res
 }
-
 

@@ -21,5 +21,7 @@ Imports:
     stringi,
     sf,
     glue,
-    tibble
-RoxygenNote: 7.2.1
+    tibble,
+    RcppRoll,
+    vctrs
+RoxygenNote: 7.3.1
