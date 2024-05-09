@@ -48,7 +48,7 @@ calcStats <- function(x, storm){
     storm <- bool_to_bounds(storm)
   }
   index  <- bounds_to_index(storm)
-  start <- field(storm, "start")
+  start <- vctrs::field(storm, "start")
   f <- function(i){
     xi <- x[i]
     c(
@@ -72,7 +72,7 @@ decluster <- function(x, size){
   idix <- which(diff(ix) > size)
   iend <- ix[c(idix, nix)]
   isrt <- ix[c(1L, idix + 1L)]
-  ret <-new_bounds(start = isrt, end = iend, size = vctrs::vec_size(x))
+  ret <- new_bounds(start = isrt, end = iend, size = vctrs::vec_size(x))
   bounds_to_bool(ret)
 }
 
