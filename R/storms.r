@@ -1,4 +1,3 @@
-
 #' Detect Storms According to ASM CSO Program Business Rules
 #'
 #' The storm detection algorithm is documented in OneNote, a pdf document, and
@@ -25,8 +24,8 @@ cso_storm <- function(x, time, threshold = 0.1, iet = 10){
   x[is.na(x)] <- 0                               # Excel treats empty as 0 - coerce missing to 0
   n <- length(x)
   At <- logical(n)                               # Active event - initialize to FALSE
-  Ft <- RcppRoll::roll_suml(x, iet, fill  = 0) > threshold # forward sum over threshold
-  Bt <- RcppRoll::roll_sumr(x, iet, fill = 0) > threshold  # backward sum over threshold
+  Ft <- RcppRoll::roll_suml(x, iet, fill  = 0) >= threshold # forward sum over threshold
+  Bt <- RcppRoll::roll_sumr(x, iet, fill = 0) >= threshold  # backward sum over threshold
   Ct    <- x  >  0                               # currently raining
   Ft.Ct  <- Ft & Ct #Ft * Ct                     # starting point
   Ft_nlag1Bt <- Ft | !lag1(Bt)                   # stopping point
