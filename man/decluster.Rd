@@ -5,7 +5,7 @@
 \title{Accepts a boolean x, and a size argument. Looks for runs of true in boolean
 and}
 \usage{
-decluster(x, size)
+decluster(x, min.diff)
 }
 \description{
 Accepts a boolean x, and a size argument. Looks for runs of true in boolean
