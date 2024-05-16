@@ -222,7 +222,7 @@ summarize_delineation <- function(storms){
   data.frame(
     total = total,
     storm_total = storm_total,
-    proportion_in_storm = total/storm_total,
+    proportion_in_storm = storm_total / total,
     storm_length = storm_len,
     avg_int = storm_total / (as.numeric(storm_len) / 60^2)
   )
