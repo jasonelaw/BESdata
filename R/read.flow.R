@@ -43,11 +43,11 @@ read.flow <- function (..., start = NULL, end = NULL, server = NULL,
             mv.location_description       AS location_description,
             mv.manhole_hansen_id          AS manhole_hansen_id,
             mr.reading_datetime           AS reading_datetime,
-            mr.depth_inches               AS depth_inches,
-            mr.velocity_fps               AS velocity_fps,
+            mr.depth_inches               AS depth,
+            mr.velocity_fps               AS velocity,
+            mr.flow_cfs_AxV               AS flow,
             mr.depth_qualifier            AS depth_qualifier,
-            mr.velocity_qualifier         AS velocity_qualifier,
-            mr.flow_cfs_AxV               AS flow_cfs_AxV
+            mr.velocity_qualifier         AS velocity_qualifier
     FROM        METER_READING             AS mr
       LEFT JOIN V_METER_VISIT_LIST_NARROW AS mv
         ON  mr.meter_visit_id = mv.meter_visit_id
@@ -55,7 +55,10 @@ read.flow <- function (..., start = NULL, end = NULL, server = NULL,
   query <- sprintf(query, where)
   ret <- dbGetQuery(con, query)
   ret <- formatDataFrame(ret, date = 'reading_datetime', parseDate = parseUTCm8Time)
-  ret[,c(6,7,10)] <- lapply(ret[,c(6,7,10)], as.numeric)
+  ret[,6:8] <- lapply(ret[,6:8], as.numeric)
   ret$manhole_hansen_id <- as.factor(ret$manhole_hansen_id)
-  return(ret)
+  ret$depth <- units::set_units(ret$depth, "in", mode = "character")
+  ret$velocity <- units::set_units(ret$velocity, "ft/s", mode = "character")
+  ret$flow <- units::set_units(ret$flow, "ft^3/s", mode = "character")
+  ret
 }

@@ -40,7 +40,7 @@ textToSQL <- function(x){
   sprintf(fmt, stringi::stri_join(x, collapse = ', '))
 }
 
-dateToSQL <- function(x, op = c(">", "<")){
+dateToSQL <- function(x, op = c(">=", "<=")){
   op <- match.arg(op)
   date.str <- compose(quoteChar, formatDate)(x)
   sprintf("%s %s", op, date.str)
@@ -65,8 +65,8 @@ constructWhereStatement <- function(..., start = Sys.Date() - 30, end = NULL,
   options(useFancyQuotes = FALSE)
   pars <- lapply(pars, compose(textToSQL, quoteChar))
   if(!is.null(date.field)){
-    date.pars <- structure(list(start = dateToSQL(start, ">"),
-                                end   = dateToSQL(end,   "<")),
+    date.pars <- structure(list(start = dateToSQL(start, ">="),
+                                end   = dateToSQL(end,   "<=")),
                            names = rep(date.field, 2))
     pars <- c(pars, date.pars)
   }
@@ -123,5 +123,5 @@ formatDataFrame <- function(x, drop = NULL, sort = NULL,
     x <- x[, setdiff(nms, drop)]
   }
   row.names(x) <- 1:nrow(x)
-  x
+  tibble::as_tibble(x)
 }

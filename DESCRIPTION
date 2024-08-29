@@ -23,5 +23,6 @@ Imports:
     glue,
     tibble,
     RcppRoll,
-    vctrs
+    vctrs,
+    units
 RoxygenNote: 7.3.1
