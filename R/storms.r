@@ -174,7 +174,7 @@ summarize_storms <- function(x, storm, time){
       sum(is.na(xi))
     )
   }
-  ret <- vapply(index, f, FUN.VALUE = setNames(numeric(3), c("sum", "which.max", "nas")))
+  ret <- vapply(index, f, FUN.VALUE = stats::setNames(numeric(3), c("sum", "which.max", "nas")))
   ret <- vctrs::vec_cbind(vctrs::new_data_frame(storm), t(ret))
   ret$which.max <- ret$which.max + start - 1
   ret$max <- x[ret$which.max]
@@ -230,9 +230,13 @@ summarize_delineation <- function(storms){
 
 # Helpers ----------------------------------------------------------------------
 
-intmap <- function(a, b) if_else(a >= b, a * a + a + b, a + b * b)
+intmap <- function(a, b){
+  dplyr::if_else(a >= b, a * a + a + b, a + b * b)
+}
 
-lag1 <- function(x) c(FALSE, x[1:(length(x)-1)])
+lag1 <- function(x){
+  c(FALSE, x[1:(length(x)-1)])
+}
 
 new_bounds <- function(start = integer(), end = integer(), size) {
   vctrs::vec_assert(start, integer())

@@ -1,3 +1,5 @@
+
+
 getDriver <- function(){
   drivers <- unique(odbc::odbcListDrivers()$name)
   if ("ODBC Driver 18 for SQL Server" %in% drivers){
@@ -28,7 +30,7 @@ dbConnect <- function(database = c("JANUS", "NEPTUNE", "WATERSHED", "EGH_PUBLIC"
   template <- "driver={{{driver}}};server={server};database={database};trusted_connection=YES"
   odbc::dbConnect(
     drv = odbc::odbc(),
-    .connection_string = glue::glue(template, .envir = db.info)
+    .connection_string = glue::glue_data(db.info, template)
   )
 }
 

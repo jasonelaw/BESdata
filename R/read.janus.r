@@ -29,30 +29,46 @@
 #'#Get the last 2 weeks of data
 #'read.janus(start = Sys.Date() - 14)
 #'}
-read.janus <- function (..., start = NULL, end = NULL, what = c('data', 'location'),
-                        server = NULL,
-                        date.field = 'sample_end_time', as.text = T, simple = F){
-  what <- match.arg(what)
-  if (identical(what, 'location')){
-    return(getLocation(..., server = server))
-  }
+read.janus <- function (...,
+    start = NULL,
+    end = NULL,
+    server = NULL,
+    date.field = 'sample_end_time',
+    as.text = T,
+    simple = F
+  ){
   con <- dbConnect(database = 'JANUS', server = server)
   on.exit(dbDisconnect(con))
   table  <- 'JANUS_ELEMENT'#"V_RPT_JANUS_ELEMENT"
   if(simple){
-    fields <- c("project_name", "location_code", "sample_code", "sample_name", "sample_type", "matrix",
-                "sample_begin_time", "sample_end_time", "janus_analyte_name", "combined_result", "analyte_units", "method_code")
+    fields <- c(
+      "project_name", "location_code",
+      "sample_code", "sample_name", "sample_type", "matrix",
+      "sample_begin_time", "sample_end_time",
+      "janus_analyte_name", "combined_result",
+      "analyte_units", "method_code"
+    )
   } else {
     fields <- "*"
   }
-  where <- constructWhereStatement(..., start = start, end = end,
-                                   date.field = date.field)
-  query <- constructQuery(table, where, unrestricted = F, fields = fields)
+  where <- constructWhereStatement(...,
+    start = start,
+    end = end,
+    date.field = date.field
+  )
+  query <- constructQuery(table, where,
+    unrestricted = F,
+    fields = fields
+  )
   ret <- dbGetQuery(con, query)
 
-  kSort  <- c('location_code', 'method_code', 'janus_analyte_name', 'sample_end_time')
-  kDates <- c('sample_begin_time', 'sample_end_time')
-  ret <- formatDataFrame(ret, sort = kSort, date = kDates, parseDate = parseLocalTime)
+  # kSort  <- c('location_code', 'method_code', 'janus_analyte_name', 'sample_end_time')
+  # kDates <- c('sample_begin_time', 'sample_end_time')
+  # ret <- formatDataFrame(ret,
+  #   sort = kSort,
+  #   date = kDates,
+  #   parseDate = parseLocalTime
+  # )
   ret$nd             <- parse.nd(ret$combined_result, as.text = as.text)
   ret$numeric_result <- parse.result(ret$combined_result)
   return(ret)
@@ -70,7 +86,12 @@ parse.nd <- function(x, as.text = T){
 
 parse.result <- function(x){
   annotations <- c("<", "EST", ">", "*")
-  ret <- stringi::stri_replace_all_fixed(x, annotations, rep("", length(annotations)), vectorize_all = F)
+  ret <- stringi::stri_replace_all_fixed(
+    str = x,
+    pattern = annotations,
+    replacement = rep("", length(annotations)),
+    vectorize_all = F
+  )
   suppressWarnings(ret <- as.numeric(ret))
   ret
 }

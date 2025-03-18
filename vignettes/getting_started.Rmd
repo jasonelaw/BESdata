@@ -1,0 +1,33 @@
+---
+title: "Getting Started With BESdata"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started With BESdata}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+The `BESdata` package is meant to simplify getting data from some BES data sources into R - mostly for products of the Technical Services / Environmental Information Division. This guide will describe some simple use cases for using the package. The package can be installed using the [https://remotes.r-lib.org](remotes) package:
+
+```{r install}
+#| eval: FALSE
+options(download.file.method = "wininet")
+remotes::install_github("jasonelaw/BESdata")
+```
+For this guide, we'll use some other packages:
+
+```{r setup}
+#| echo: FALSE
+library(BESdata)
+library(sf)
+```
+
+# Using BESdata to Access Aquarius Time Series
+
+

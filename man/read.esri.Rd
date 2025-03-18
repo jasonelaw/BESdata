@@ -9,14 +9,14 @@ read.esri(database = "EGH_PUBLIC", layer, query = NULL, ...)
 \arguments{
 \item{database}{Either EGH_PUBLIC on GISDB1 or SWSP on BESDBPROD1}
 
-\item{layer}{a fully qualified SQL table name, `[schema].[table]`}
+\item{layer}{a fully qualified SQL table name, \verb{[schema].[table]}}
 
-\item{query}{a query to submit directly to server; `Shape.STAsBinary() as geometry` is necessary in select statement}
+\item{query}{a query to submit directly to server; \verb{Shape.STAsBinary() as geometry} is necessary in select statement}
 
 \item{...}{additional arguments passed to st_read. The correct CRS, usually 2913, will need to be passed.}
 }
 \value{
-an `sf` object, additionally inheriting `tbl_df`, `tbl`
+an \code{sf} object, additionally inheriting \code{tbl_df}, \code{tbl}
 }
 \description{
 Reads from a defined list of databases.

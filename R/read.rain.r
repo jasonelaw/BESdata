@@ -45,7 +45,7 @@ calculateEndTime <- function(x, interval, daypart){
 }
 
 #'@importMethodsFrom lubridate +
-formatRain <- function(x, interval, daypart, local.tz = Sys.tzone()){
+formatRain <- function(x, interval, daypart, local.tz = Sys.timezone()){
   kFields <- c(
     "location_id", "location_name",
     "start_local", "end_local",
@@ -73,29 +73,51 @@ read.rain.locations <- function(server = NULL)
   on.exit(dbDisconnect(con))
   qry <- c("
     SELECT
-      STATION.station_id AS location_id,
-      STATION.h2_number as h2_number,
+      station_id AS location_id,
+      h2_number,
       station_name AS location_name,
+      location_description,
       state_plane_x_ft AS x,
       state_plane_y_ft AS y,
-      RHS.start_date AS start_date,
-      RHS.end_date AS end_date
-    FROM STATION
-    INNER JOIN (
-      SELECT
-        station_id,
-        MIN(start_date) AS start_date,
-        MAX(end_date) AS end_date
-      FROM RAIN_SENSOR
-      GROUP BY station_id
-    ) RHS
-      ON (STATION.station_id = RHS.station_id)
-    ")
-  res <- dbGetQuery(con, qry)
+      start_date AS station_start_date,
+      end_date AS station_end_date,
+      station_active AS location_active,
+      rain_sensor_active,
+      rain_sensor_first_date,
+      rain_sensor_last_date
+    FROM V_RAIN_SENSOR_FEATURE_CLASS;
+  ")
 
-  res$start_date <- parseUTCm8Time(res$start_date)
-  res$end_date   <- parseUTCm8Time(res$end_date)
-  res <- sf::st_as_sf(tibble::as_tibble(res), coords = c("x", "y"), crs = 2913)
+  res <- dbGetQuery(con, qry)
+  res$rain_sensor_first_date <- parseUTCm8Time(res$rain_sensor_first_date)
+  res$rain_sensor_last_date  <- parseUTCm8Time(res$rain_sensor_last_date)
+  res$station_start_date <- parseUTCm8Time(res$station_start_date)
+  res$station_end_date   <- parseUTCm8Time(res$station_end_date)
+  res <- sf::st_as_sf(
+    x = tibble::as_tibble(res),
+    coords = c("x", "y"),
+    crs = 2913
+  )
   res
 }
 
+# "
+#   SELECT
+#     STATION.station_id AS location_id,
+#     STATION.h2_number as h2_number,
+#     station_name AS location_name,
+#     state_plane_x_ft AS x,
+#     state_plane_y_ft AS y,
+#     RHS.start_date AS start_date,
+#     RHS.end_date AS end_date
+#   FROM STATION
+#   INNER JOIN (
+#     SELECT
+#       station_id,
+#       MIN(start_date) AS start_date,
+#       MAX(end_date) AS end_date
+#     FROM RAIN_SENSOR
+#     GROUP BY station_id
+#   ) RHS
+#     ON (STATION.station_id = RHS.station_id)
+#   ")

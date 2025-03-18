@@ -9,7 +9,6 @@ read.janus(
   ...,
   start = NULL,
   end = NULL,
-  what = c("data", "location"),
   server = NULL,
   date.field = "sample_end_time",
   as.text = T,
@@ -25,11 +24,11 @@ read.janus.location(..., server = NULL, as.sf = TRUE)
 
 \item{end}{end date of data range}
 
-\item{what}{whether to return data or locations only. \code{start} and \code{end} are ignored if locations}
-
 \item{date.field}{the field used for the start and end query arguments.}
 
-\item{as.text}{logical, return a text (TRUE) or numeric (FALSE) nondetect indicator in column `nd`.}
+\item{as.text}{logical, return a text (TRUE) or numeric (FALSE) nondetect indicator in column \code{nd}.}
+
+\item{what}{whether to return data or locations only. \code{start} and \code{end} are ignored if locations}
 
 \item{dsn}{the dsn for the JANUS database on the current system}
 }
