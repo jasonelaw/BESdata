@@ -30,7 +30,8 @@ read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
   # Format args and get data
   daypart <- match.arg(daypart)
   args <- data.frame(station, start, end, daypart, interval)
-  rain <- purrr::pmap_dfr(args, make.queries)
+  rain <- purrr::pmap(args, make.queries)
+  rain <- list_rbind(rain)
   if (format){
     formatRain(rain, interval, daypart)
   } else {
