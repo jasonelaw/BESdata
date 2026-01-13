@@ -85,7 +85,7 @@ read.rain.locations <- function(server = NULL)
       rain_sensor_active,
       rain_sensor_first_date,
       rain_sensor_last_date
-    FROM V_RAIN_SENSOR_FEATURE_CLASS;
+    FROM V_QL_RAIN_SENSOR_FEATURE_CLASS;
   ")
 
   res <- dbGetQuery(con, qry)
