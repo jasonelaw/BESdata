@@ -2,7 +2,7 @@
 #'
 #'Submits a query to a table join allowing for queries by Hansen ID and date.
 #'
-#'To query by Hansen ID use the field name mv.manhole_hansen_id. To query a specific date range use start and end arguments, otherwise all available data at that location will be returned.
+#'To query by Hansen ID use the field name mv.manhole_hansen_id. To query a specific date range use start and end arguments, otherwise all available data at th at location will be returned.
 #'
 #'The user running R must have permission to access the view (V_METER_VISIT_LIST_NARROW) and table (METER_READING) used in the query. The user must have an ODBC Data Source set up for the Janus database on the current computer. The reporting server version of the database is currently BESREPORTS.JANUS.
 #'
@@ -55,4 +55,55 @@ read.janus.flow <- function (..., start = NULL, end = NULL, server = NULL,
   ret$velocity <- units::set_units(ret$velocity, "ft/s", mode = "character")
   ret$flow <- units::set_units(ret$flow, "ft^3/s", mode = "character")
   ret
+}
+
+es_neptune <- function(con, parameter, df) {
+  call <- r"(
+    EXEC USP_MODEL_{parameter}
+      @start_date        = '{start}',
+      @end_date          = '{end}',
+      @interval          = {interval},
+      @daypart           = '{daypart}',
+      @environ_sensor_id = {sensor_id},
+      @adjust_for_dst    = {adjust_for_dst}
+  )"
+  qry <- glue::glue_data(df, call)
+  ret <- purrr::map(qry, \(x) try(odbc::dbGetQuery(con, x), silent = TRUE))
+  purrr:::list_rbind(setNames(ret, qry), names_to = "query")
+}
+#'qry <- r"(
+#'  EXEC USP_MODEL_{parameter}
+#'    @start_date        = '{start}',
+#'    @end_date          = '{end}',
+#'    @interval          = {interval},
+#'    @daypart           = '{daypart}',
+#'    @environ_sensor_id = {sensor_id},
+#'    @adjust_for_dst    = {adjust_for_dst}
+#')"
+#'
+#' tmp <- dbGetQuery(con, qry)
+
+read.neptune.flow <- function(sensor_id, start = end - 7, end = Sys.Date(),
+                      daypart = c('day','hour', 'minute', 'month', 'year'),
+                      interval = 1, server = NULL, format = T) {
+  con <- dbConnect(database = 'NEPTUNE', server = server)
+  on.exit(dbDisconnect(con))
+  stopifnot(lubridate::is.Date(start), lubridate::is.Date(end))
+
+  make.queries <- function(start, end, interval, daypart, station){
+    qry <- sprintf("{call USP_MODEL_FLOW('%s', '%s', %s, '%s', %s)}",
+                   format(start), format(end), interval, daypart, station)
+    ans <- dbGetQuery(con, qry)
+    return(if (is.data.frame(ans)) ans else NULL)
+  }
+
+  # Format args and get data
+  daypart <- match.arg(daypart)
+  args <- data.frame(station, start, end, daypart, interval)
+  rain <- purrr::pmap_dfr(args, make.queries)
+  if (format){
+    formatRain(rain, interval, daypart)
+  } else {
+    rain
+  }
 }
