@@ -26,7 +26,8 @@ Imports:
     vctrs,
     units,
     raquarius,
-    stats
+    stats,
+    pool
 RoxygenNote: 7.3.3
 Suggests: 
     knitr,

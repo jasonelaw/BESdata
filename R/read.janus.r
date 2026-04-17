@@ -126,7 +126,7 @@ check.units <- function(unit, f){
 
 #'@rdname read.janus
 #'@export
-read.janus.location <- function(..., server = NULL, as.sf = TRUE){
+read.janus.location <- function(..., server, as.sf = TRUE){
   fields <- c("location_id", "active_flow_monitoring_location", "active_sampling_location",
     "location_code", "location_description", "flow_control_type_id",
     "manhole_hansen_id", "pipe_hansen_compkey", "distance_from_manhole_inches",
@@ -137,7 +137,7 @@ read.janus.location <- function(..., server = NULL, as.sf = TRUE){
     "flow_control_type_name", "location_type_bes_name", "hansen_pipe_shape",
     "hansen_pipe_diameter_in", "hansen_pipe_height_in", "asm_pipe_shape",
     "asm_pipe_height_in", "geometry")
-  con <- dbConnect(database = 'JANUS', server = server)
+  con <- dbConnect(database = 'JANUS', server = NULL)
   on.exit(dbDisconnect(con))
   where <- constructWhereStatement(..., start = NULL)
   query <- constructQuery('V_LOCATION_LIST', where, unrestricted = F)
@@ -174,6 +174,7 @@ getLocationByProject <- function(project_name, server = NULL, as.sf = TRUE){
 # }
 
 #'@export
+#'
 getSample <- function(..., start = NULL, end = NULL, date.field = 'sample_end_time', server = NULL){
   con <- dbConnect(database = 'JANUS', server = server)
   on.exit(dbDisconnect(con))

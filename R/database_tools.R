@@ -1,5 +1,4 @@
 
-
 getDriver <- function(){
   drivers <- unique(odbc::odbcListDrivers()$name)
   if("ODBC Driver 17 for SQL Server" %in% drivers) {
@@ -21,7 +20,7 @@ dbConnect <- function(database, server){
     SWSP       = list(database = "SWSP",       server = "BESDBPROD1"),
     MODELING   = list(database = "MODELING",   server = "BESDBPROD1")
   )
-  if (rlang::is_missing(server)) {
+  if (rlang::is_missing(server) || is.null(server)) {
     rlang::check_required(database)
     rlang::arg_match(database, names(info))
     db.info <- info[[database]]

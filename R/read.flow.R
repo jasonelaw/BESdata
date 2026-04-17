@@ -57,32 +57,6 @@ read.janus.flow <- function (..., start = NULL, end = NULL, server = NULL,
   ret
 }
 
-es_neptune <- function(con, parameter, df) {
-  call <- r"(
-    EXEC USP_MODEL_{parameter}
-      @start_date        = '{start}',
-      @end_date          = '{end}',
-      @interval          = {interval},
-      @daypart           = '{daypart}',
-      @environ_sensor_id = {sensor_id},
-      @adjust_for_dst    = {adjust_for_dst}
-  )"
-  qry <- glue::glue_data(df, call)
-  ret <- purrr::map(qry, \(x) try(odbc::dbGetQuery(con, x), silent = TRUE))
-  purrr:::list_rbind(setNames(ret, qry), names_to = "query")
-}
-#'qry <- r"(
-#'  EXEC USP_MODEL_{parameter}
-#'    @start_date        = '{start}',
-#'    @end_date          = '{end}',
-#'    @interval          = {interval},
-#'    @daypart           = '{daypart}',
-#'    @environ_sensor_id = {sensor_id},
-#'    @adjust_for_dst    = {adjust_for_dst}
-#')"
-#'
-#' tmp <- dbGetQuery(con, qry)
-
 read.neptune.flow <- function(sensor_id, start = end - 7, end = Sys.Date(),
                       daypart = c('day','hour', 'minute', 'month', 'year'),
                       interval = 1, server = NULL, format = T) {

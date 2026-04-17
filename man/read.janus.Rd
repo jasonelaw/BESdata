@@ -15,7 +15,7 @@ read.janus(
   simple = F
 )
 
-read.janus.location(..., server = NULL, as.sf = TRUE)
+read.janus.location(..., server, as.sf = TRUE)
 }
 \arguments{
 \item{...}{query arguments in the form 'field = value'.}
