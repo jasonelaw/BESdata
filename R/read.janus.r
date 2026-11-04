@@ -37,7 +37,7 @@ read.janus <- function (...,
     as.text = T,
     simple = F
   ){
-  con <- dbConnect(database = 'JANUS', server = server)
+  con <- if (is.null(server)) janus() else janus(server)
   on.exit(dbDisconnect(con))
   table  <- 'JANUS_ELEMENT'#"V_RPT_JANUS_ELEMENT"
   if(simple){

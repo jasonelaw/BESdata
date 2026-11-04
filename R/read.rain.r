@@ -17,7 +17,8 @@
 read.rain <- function(station = 160, start = end - 7, end = Sys.Date(),
                       daypart = c('day','hour', 'minute', 'month', 'year'),
                       interval = 1, server = NULL, format = T){
-  con <- dbConnect(database = 'NEPTUNE', server = server)
+  #con <- dbConnect(database = 'NEPTUNE', server = server)
+  con <- neptune()
   on.exit(dbDisconnect(con))
   stopifnot(lubridate::is.Date(start), lubridate::is.Date(end))
   make.queries <- function(start, end, interval, daypart, station){

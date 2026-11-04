@@ -1,6 +1,6 @@
 
 janus <- function(server = "BESRPT2") {
-  dbConnect(server,
+  connect(server,
     database = "JANUS",
     timezone = "America/Los_Angeles",
     timezone_out = "America/Los_Angeles"

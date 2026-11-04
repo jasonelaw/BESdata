@@ -19,7 +19,7 @@ read.bird <- function (..., start = NULL, end = NULL, server = NULL){
   where <- constructWhereStatement(..., start = start, end = end,
                                    date.field = "survey_start")
   query <- constructQuery(kView, where, unrestricted = TRUE)
-  con <- dbConnect("WATERSHED", server = server)
+  con <- if (is.null(server)) watershed() else watershed(server)
   ret <- dbGetQuery(con, query)
   ret <- formatDataFrame(
     ret,
